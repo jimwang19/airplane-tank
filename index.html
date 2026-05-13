@@ -66,8 +66,12 @@ h1{font-size:28px;margin-bottom:8px;background:linear-gradient(135deg,#4fc3f7,#8
 <script>
 const files = [
   {name:'airplane-tank-game-v2.html', label:'游戏原型', desc:'当前可运行原型，单文件包含全部代码', tag:'游戏', tagClass:'tag-game', type:'game'},
+  {name:'ui-prototype.html', label:'UI原型（无标注）', desc:'7个界面的高保真原型总览', tag:'游戏', tagClass:'tag-game', type:'game'},
+  {name:'ui-prototype-annotated.html', label:'UI原型（带标注）', desc:'带规格标注的原型文档，适合开发联调', tag:'游戏', tagClass:'tag-game', type:'game'},
   {name:'airplane-tank-game-spec.md', label:'产品规格书', desc:'所有功能定义和交付标准的唯一来源', tag:'文档', tagClass:'tag-doc', type:'md'},
+  {name:'ui-spec.md', label:'UI视觉规格', desc:'界面视觉和组件规格说明', tag:'文档', tagClass:'tag-doc', type:'md'},
   {name:'CLAUDE.md', label:'项目指引', desc:'Claude Code 工作指引与架构说明', tag:'配置', tagClass:'tag-cfg', type:'md'},
+  {name:'figma-plugin-game-over.js', label:'Figma插件脚本', desc:'在 Figma Console 运行的结束界面生成脚本', tag:'配置', tagClass:'tag-cfg', type:'code'},
 ];
 
 const fileList = document.getElementById('fileList');
@@ -80,16 +84,26 @@ files.forEach(f => {
 });
 
 function openFile(f) {
-  if (f.type === 'game') {
+  if (f.type === 'game' || f.type === 'code') {
     location.href = f.name;
     return;
   }
-  fetch(f.name).then(r => r.text()).then(text => {
+  fetch(f.name).then(r => {
+    if (!r.ok) {
+      throw new Error(`HTTP ${r.status}`);
+    }
+    return r.text();
+  }).then(text => {
     document.getElementById('home').style.display = 'none';
     document.getElementById('md-viewer').classList.add('active');
     document.getElementById('viewerTitle').textContent = f.label;
     document.getElementById('mdBody').innerHTML = parseMd(text);
     window.scrollTo(0, 0);
+  }).catch(err => {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('md-viewer').classList.add('active');
+    document.getElementById('viewerTitle').textContent = `${f.label}（加载失败）`;
+    document.getElementById('mdBody').innerHTML = `<h2>文件无法访问</h2><p>尝试读取：<code>${f.name}</code></p><p>错误：<code>${err.message}</code></p><p>若部署在 Cloudflare Pages，请确认该文件已包含在发布产物中。</p>`;
   });
 }
 
