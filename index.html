@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞机大战坦克 - 项目导航</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0a0e1a;color:#e0e6f0;min-height:100vh}
+.container{max-width:960px;margin:0 auto;padding:32px 24px}
+h1{font-size:28px;margin-bottom:8px;background:linear-gradient(135deg,#4fc3f7,#81d4fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:#78909c;margin-bottom:32px;font-size:14px}
+.file-list{display:grid;gap:16px;margin-bottom:40px}
+.file-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:20px 24px;cursor:pointer;transition:all .2s}
+.file-card:hover{background:rgba(255,255,255,.1);border-color:rgba(79,195,247,.3);transform:translateY(-2px)}
+.file-card h3{font-size:16px;color:#4fc3f7;margin-bottom:4px}
+.file-card p{font-size:13px;color:#78909c}
+.file-card .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle}
+.tag-game{background:rgba(76,175,80,.2);color:#81c784}
+.tag-doc{background:rgba(255,183,77,.2);color:#ffb74d}
+.tag-cfg{background:rgba(171,71,188,.2);color:#ce93d8}
+#md-viewer{display:none}
+#md-viewer.active{display:block}
+.viewer-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.btn-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#e0e6f0;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .2s}
+.btn-back:hover{background:rgba(255,255,255,.15)}
+.viewer-title{font-size:18px;color:#4fc3f7}
+.md-body{background:rgba(255,255,255,.03);border-radius:12px;padding:32px;line-height:1.8;font-size:15px}
+.md-body h1{font-size:26px;margin:24px 0 12px;-webkit-text-fill-color:#4fc3f7}
+.md-body h2{font-size:22px;margin:20px 0 10px;-webkit-text-fill-color:#81d4fa}
+.md-body h3{font-size:18px;margin:16px 0 8px;-webkit-text-fill-color:#b3e5fc}
+.md-body h1:first-child{margin-top:0}
+.md-body p{margin:8px 0}
+.md-body ul,.md-body ol{margin:8px 0;padding-left:24px}
+.md-body li{margin:4px 0}
+.md-body code{background:rgba(255,255,255,.1);padding:1px 6px;border-radius:3px;font-size:13px;font-family:"Cascadia Code",Consolas,monospace}
+.md-body pre{background:rgba(0,0,0,.3);border-radius:8px;padding:16px;overflow-x:auto;margin:12px 0}
+.md-body pre code{background:none;padding:0}
+.md-body table{width:100%;border-collapse:collapse;margin:12px 0}
+.md-body th,.md-body td{border:1px solid rgba(255,255,255,.12);padding:8px 12px;text-align:left}
+.md-body th{background:rgba(255,255,255,.05)}
+.md-body blockquote{border-left:3px solid #4fc3f7;padding-left:16px;margin:12px 0;color:#90a4ae}
+.md-body a{color:#4fc3f7;text-decoration:none}
+.md-body a:hover{text-decoration:underline}
+.md-body hr{border:none;border-top:1px solid rgba(255,255,255,.1);margin:20px 0}
+.md-body img{max-width:100%;border-radius:8px}
+.md-body strong{color:#fff}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="home">
+    <h1>飞机大战坦克</h1>
+    <p class="subtitle">竖版射击H5手游原型 — 项目文件导航</p>
+    <div class="file-list" id="fileList"></div>
+  </div>
+  <div id="md-viewer">
+    <div class="viewer-header">
+      <button class="btn-back" onclick="goHome()">← 返回</button>
+      <span class="viewer-title" id="viewerTitle"></span>
+    </div>
+    <div class="md-body" id="mdBody"></div>
+  </div>
+</div>
+
+<script>
+const files = [
+  {name:'airplane-tank-game-v2.html', label:'游戏原型', desc:'当前可运行原型，单文件包含全部代码', tag:'游戏', tagClass:'tag-game', type:'game'},
+  {name:'airplane-tank-game-spec.md', label:'产品规格书', desc:'所有功能定义和交付标准的唯一来源', tag:'文档', tagClass:'tag-doc', type:'md'},
+  {name:'CLAUDE.md', label:'项目指引', desc:'Claude Code 工作指引与架构说明', tag:'配置', tagClass:'tag-cfg', type:'md'},
+];
+
+const fileList = document.getElementById('fileList');
+files.forEach(f => {
+  const card = document.createElement('div');
+  card.className = 'file-card';
+  card.innerHTML = `<h3>${f.label}<span class="tag ${f.tagClass}">${f.tag}</span></h3><p>${f.desc}</p>`;
+  card.onclick = () => openFile(f);
+  fileList.appendChild(card);
+});
+
+function openFile(f) {
+  if (f.type === 'game') {
+    location.href = f.name;
+    return;
+  }
+  fetch(f.name).then(r => r.text()).then(text => {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('md-viewer').classList.add('active');
+    document.getElementById('viewerTitle').textContent = f.label;
+    document.getElementById('mdBody').innerHTML = parseMd(text);
+    window.scrollTo(0, 0);
+  });
+}
+
+function goHome() {
+  document.getElementById('home').style.display = '';
+  document.getElementById('md-viewer').classList.remove('active');
+}
+
+function parseMd(src) {
+  let h = src;
+  h = h.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  h = h.replace(/^#### (.+)$/gm,'<h4>$1</h4>');
+  h = h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h = h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  h = h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  h = h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h = h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h = h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h = h.replace(/^\|(.+)\|$/gm, function(m) {
+    const cells = m.split('|').filter(c=>c.trim()!=='');
+    return '<tr>' + cells.map(c => '<td>' + c.trim() + '</td>').join('') + '</tr>';
+  });
+  h = h.replace(/(<\/tr>\n?)(<tr>)/g,'$1$2');
+  const hasTable = /<tr>/.test(h);
+  if (hasTable) {
+    h = h.replace(/(<tr>.*?<\/tr>\n?)+/g, function(m) {
+      const first = m.match(/<tr>/);
+      return '<table>' + m + '</table>';
+    });
+  }
+  h = h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h = h.replace(/^---$/gm,'<hr>');
+  h = h.replace(/^(\s*)[-*] (.+)$/gm,'$1<li>$2</li>');
+  h = h.replace(/(<li>.*<\/li>\n?)+/g, function(m){return '<ul>' + m + '</ul>';});
+  h = h.replace(/^(\s*)\d+\. (.+)$/gm,'$1<li>$2</li>');
+  h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>');
+  h = h.replace(/^(?!<[hultbo]|<li|<hr|<tr|<\/)(.+)$/gm, function(m, line) {
+    if (line.trim() === '') return '';
+    return '<p>' + line + '</p>';
+  });
+  return h;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞机大战坦克 — UI 原型总览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ===== 页面排版 ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111827;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    padding: 48px 24px 80px;
+  }
+  .page-title {
+    text-align: center;
+    color: #f9fafb;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: .5px;
+  }
+  .page-sub {
+    text-align: center;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 48px;
+  }
+  .screens-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screen-label {
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== 手机外壳 ===== */
+  .phone-shell {
+    width: 320px;
+    height: 693px;
+    border-radius: 36px;
+    background: #1a1a2e;
+    border: 2px solid #2d2d4e;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .phone-shell::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background: #2d2d4e;
+    border-radius: 3px;
+    z-index: 100;
+  }
+
+  /* ===== 共用设计 Token ===== */
+  :root {
+    --bg: #0a0a15;
+    --overlay: rgba(10,10,21,.95);
+    --cyan: #4ecdc4;
+    --teal: #44a08d;
+    --red: #ff6b6b;
+    --gold: #ffd93d;
+    --purple: #c084fc;
+    --text: #ffffff;
+    --sub: #888888;
+    --muted: rgba(255,255,255,.4);
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 20px;
+  }
+
+  /* ===== 星空背景 (Canvas 模拟) ===== */
+  .starfield {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, rgba(78,205,196,.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 8%, rgba(255,255,255,.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 22%, rgba(255,255,255,.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 55%, rgba(78,205,196,.4) 0%, transparent 100%),
+      radial-gradient(2px 2px at 20% 70%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 90%, rgba(78,205,196,.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 90% 75%, rgba(255,255,255,.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 68% 35%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 15% 88%, rgba(255,107,107,.2) 0%, transparent 100%);
+    background-color: var(--bg);
+  }
+
+  /* ===== 地形条 ===== */
+  .terrain-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to top, #1a3a1a 0%, #0f2a0f 60%, transparent 100%);
+    z-index: 1;
+  }
+  .terrain-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2d5a2d, #4a8a4a, #2d5a2d, #4a8a4a, #2d5a2d);
+    opacity: .6;
+  }
+
+  /* ===== 通用 Overlay ===== */
+  .overlay-screen {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 20;
+  }
+
+  /* ===== 按钮 ===== */
+  .btn {
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--cyan), var(--teal));
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    width: 75%;
+    max-width: 200px;
+    display: block;
+    margin: 5px auto;
+    letter-spacing: 1px;
+    cursor: default;
+    text-align: center;
+    text-decoration: none;
+  }
+  .btn-sec {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.25);
+  }
+  .btn-red {
+    background: linear-gradient(45deg, #ff6b6b, #cc4a4a);
+  }
+
+  /* ===== 标签 ===== */
+  .stag {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 9px;
+    color: #888;
+  }
+
+  /* ===== HUD ===== */
+  .hud-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+  .hud-score { color: var(--cyan); font-size: 14px; font-weight: 700; }
+  .hud-pause {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    color: #fff;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+  .hud-hearts { display: flex; gap: 3px; }
+  .hud-heart { color: var(--red); font-size: 14px; }
+  .hud-heart.lost { opacity: .2; }
+  .hud-wlv {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 20px;
+    border: 1px solid rgba(78,205,196,.45);
+    color: var(--cyan);
+    background: rgba(78,205,196,.12);
+    font-weight: 700;
+  }
+  .hud-wave { font-size: 11px; color: #888; letter-spacing: 1px; }
+
+  /* ===== Boss HP Bar ===== */
+  .boss-hp-wrap {
+    position: absolute;
+    top: 44px; left: 8px; right: 8px;
+    z-index: 11;
+  }
+  .boss-hp-track {
+    height: 9px;
+    background: rgba(0,0,0,.65);
+    border-radius: 5px;
+    border: 1px solid rgba(255,107,107,.45);
+    overflow: hidden;
+  }
+  .boss-hp-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #ff6b6b, #ff3333);
+    width: 65%;
+  }
+  .boss-name {
+    text-align: center;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-shadow: 0 0 8px rgba(255,107,107,.8);
+    margin-top: 2px;
+  }
+
+  /* ===== 虚拟摇杆 ===== */
+  .controls-area {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    z-index: 12;
+  }
+  .joystick {
+    position: absolute;
+    left: 14px; bottom: 20px;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    border: 2px solid rgba(255,255,255,.18);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .joystick-knob {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(78,205,196,.7);
+    transform: translate(8px, -6px);
+  }
+  .bomb-btn {
+    position: absolute;
+    right: 14px; bottom: 22px;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(255,107,107,.28);
+    border: 2px solid rgba(255,107,107,.6);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 1px;
+  }
+  .bomb-icon { font-size: 18px; }
+  .bomb-count { font-size: 10px; font-weight: 700; color: #fff; }
+
+  /* ===== 粒子/敌人/子弹 (模拟) ===== */
+  .enemy-tank {
+    position: absolute;
+    display: flex; flex-direction: column;
+    align-items: center;
+  }
+  .tank-body {
+    width: 28px; height: 20px;
+    background: #5a4a3a;
+    border-radius: 3px;
+    position: relative;
+    border: 1px solid #7a6a5a;
+  }
+  .tank-turret {
+    width: 10px; height: 14px;
+    background: #6a5a4a;
+    border-radius: 2px;
+    margin: -7px auto 0;
+    border: 1px solid #8a7a6a;
+  }
+  .enemy-hp {
+    width: 24px; height: 3px;
+    background: rgba(0,0,0,.5);
+    border-radius: 2px;
+    margin-top: 2px;
+    overflow: hidden;
+  }
+  .enemy-hp-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 2px;
+  }
+  .player-plane {
+    position: absolute;
+    bottom: 130px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .plane-body {
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 26px solid var(--cyan);
+    position: relative;
+  }
+  .plane-body::after {
+    content: '';
+    position: absolute;
+    bottom: -26px;
+    left: -5px;
+    width: 10px; height: 10px;
+    background: rgba(255,107,107,.8);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255,107,107,.8);
+  }
+  .plane-wings {
+    position: absolute;
+    top: 10px;
+    width: 36px; height: 8px;
+    background: #44a08d;
+    border-radius: 2px;
+    left: -8px;
+  }
+  .bullet {
+    position: absolute;
+    width: 3px; height: 10px;
+    background: var(--cyan);
+    border-radius: 2px;
+    box-shadow: 0 0 6px var(--cyan);
+  }
+  .explosion-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 4px var(--gold);
+  }
+  .item-pickup {
+    position: absolute;
+    font-size: 16px;
+    filter: drop-shadow(0 0 6px rgba(255,217,61,.8));
+  }
+
+  /* ===== 连击显示 ===== */
+  .combo-badge {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 14;
+  }
+  .combo-text-big { font-size: 16px; font-weight: 700; color: var(--gold); text-shadow: 0 0 10px rgba(255,217,61,.6); }
+  .combo-multi { font-size: 11px; color: #ff9ff3; }
+
+  /* ===== 波次公告 ===== */
+  .wave-announce {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 15;
+  }
+  .wave-title { font-size: 32px; font-weight: 900; color: #fff; text-shadow: 0 0 30px rgba(78,205,196,.9), 0 0 60px rgba(78,205,196,.4); }
+  .wave-subtitle { font-size: 12px; color: var(--red); letter-spacing: 2px; margin-top: 6px; }
+
+  /* ===== 开始界面 ===== */
+  .main-title {
+    font-size: 26px;
+    font-weight: 900;
+    background: linear-gradient(45deg, var(--cyan), var(--teal), var(--red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 5px;
+    letter-spacing: .5px;
+  }
+  .main-sub { font-size: 12px; color: var(--sub); margin-bottom: 18px; }
+  .tags-wrap { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+  .high-score-text { font-size: 12px; color: var(--cyan); margin-bottom: 16px; }
+  .version-text {
+    position: absolute;
+    bottom: 6px; left: 0; right: 0;
+    text-align: center;
+    font-size: 8px;
+    color: rgba(255,255,255,.3);
+  }
+
+  /* ===== 结束界面 ===== */
+  .go-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--red);
+    text-shadow: 0 0 12px rgba(255,107,107,.5);
+    margin-bottom: 4px;
+  }
+  .stars-row { display: flex; gap: 6px; justify-content: center; margin: 4px 0 12px; }
+  .star { font-size: 24px; }
+  .star.dim { filter: grayscale(1) brightness(.25); }
+  .new-record-badge {
+    color: var(--gold);
+    font-size: 11px;
+    margin-bottom: 10px;
+    background: rgba(255,217,61,.1);
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,217,61,.3);
+  }
+  .go-score {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: 0 0 12px rgba(78,205,196,.5);
+    margin-bottom: 10px;
+  }
+  .go-stats-card {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    width: 100%;
+    justify-content: center;
+  }
+  .stat-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    padding: 8px 12px;
+    text-align: center;
+    flex: 1;
+    max-width: 90px;
+  }
+  .stat-val { font-size: 18px; font-weight: 700; color: #fff; }
+  .stat-lbl { font-size: 9px; color: #888; margin-top: 2px; }
+
+  /* ===== 暂停界面 ===== */
+  .pause-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+  .pause-info-text { font-size: 13px; color: #aaa; margin-bottom: 16px; line-height: 1.7; }
+  .toggle-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #aaa;
+  }
+  .toggle-item { display: flex; align-items: center; gap: 5px; }
+  .toggle-dot {
+    width: 16px; height: 10px;
+    background: var(--cyan);
+    border-radius: 5px;
+    position: relative;
+  }
+  .toggle-dot::after {
+    content: '';
+    position: absolute;
+    right: 1px; top: 1px;
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .toggle-dot.off { background: #444; }
+  .toggle-dot.off::after { right: auto; left: 1px; }
+
+  /* ===== 教程界面 ===== */
+  .tut-title { font-size: 20px; font-weight: 700; color: var(--cyan); margin-bottom: 14px; }
+  .tut-controls-row {
+    display: flex;
+    justify-content: space-around;
+    width: 85%;
+    margin: 0 0 14px;
+    gap: 8px;
+  }
+  .tut-ctrl-item { text-align: center; font-size: 10px; color: #aaa; }
+  .tut-ctrl-icon { font-size: 22px; margin-bottom: 3px; }
+  .tut-section {
+    font-size: 11px;
+    color: #ccc;
+    line-height: 1.9;
+    margin-bottom: 14px;
+    text-align: left;
+    width: 85%;
+  }
+  .tut-section span { color: var(--cyan); font-weight: 600; }
+
+  /* ===== Boss 战界面特殊效果 ===== */
+  .boss-glow-ring {
+    position: absolute;
+    top: 120px; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,107,107,.15) 0%, transparent 70%);
+    z-index: 3;
+  }
+  .boss-body {
+    position: absolute;
+    top: 80px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    text-align: center;
+  }
+  .boss-tank-hull {
+    width: 64px; height: 44px;
+    background: linear-gradient(180deg, #4a3a2a 0%, #2a1a0a 100%);
+    border-radius: 6px;
+    border: 2px solid rgba(255,107,107,.5);
+    box-shadow: 0 0 16px rgba(255,107,107,.4);
+    margin: 0 auto;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .boss-tank-hull::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 50%; transform: translateX(-50%);
+    width: 18px; height: 16px;
+    background: #5a4a3a;
+    border-radius: 3px;
+    border: 1px solid rgba(255,107,107,.4);
+  }
+  .boss-eye { font-size: 18px; }
+  .boss-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-shadow: 0 0 6px var(--red);
+    margin-top: 3px;
+  }
+
+  /* ===== wave transition ===== */
+  .wave-trans-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 20;
+  }
+  .wave-trans-num {
+    font-size: 56px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(78,205,196,.9), 0 0 80px rgba(78,205,196,.4);
+    line-height: 1;
+  }
+  .wave-trans-sub {
+    font-size: 13px;
+    color: var(--red);
+    letter-spacing: 3px;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  /* ===== 道具图例 (用于界面说明) ===== */
+  .item-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .item-chip {
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 14px;
+    padding: 3px 8px;
+    font-size: 9px;
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">飞机大战坦克 — UI 界面原型</div>
+<div class="page-sub">6 个核心界面 · 480×800 逻辑分辨率 · 可导入 Figma (html.to.design)</div>
+
+<div class="screens-grid">
+
+  <!-- ===== 1. 开始界面 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">01 · 开始界面</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+        <div class="overlay-screen">
+          <div class="main-title">飞机大战坦克</div>
+          <div class="main-sub">空地对决 · 波次推进</div>
+          <div class="tags-wrap">
+            <span class="stag">4种坦克</span>
+            <span class="stag">Boss战</span>
+            <span class="stag">5级武器</span>
+            <span class="stag">连击倍率</span>
+            <span class="stag">5种道具</span>
+          </div>
+          <div class="high-score-text">🏆 最高分: 12,500</div>
+          <a class="btn">开始战斗</a>
+          <a class="btn btn-sec">操作指南</a>
+          <div class="version-text">飞机大战坦克 v2.0 | 离线可用</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2. 游戏中界面 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">02 · 游戏中 (Wave 2)</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+
+        <!-- HUD -->
+        <div class="hud-bar">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="hud-score">24,380</span>
+            <span class="hud-wlv">Lv.3 三连</span>
+          </div>
+          <span class="hud-wave">W2</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <div class="hud-hearts">
+              <span class="hud-heart">❤️</span>
+              <span class="hud-heart">❤️</span>
+              <span class="hud-heart lost">❤️</span>
+            </div>
+            <span class="hud-pause">⏸</span>
+          </div>
+        </div>
+
+        <!-- 敌人 -->
+        <div class="enemy-tank" style="position:absolute;top:100px;left:60px">
+          <div class="tank-turret"></div>
+          <div class="tank-body"></div>
+          <div class="enemy-hp"><div class="enemy-hp-fill" style="width:60%"></div></div>
+        </div>
+        <div class="enemy-tank" style="position:absolute;top:80px;left:160px">
+          <div class="tank-turret"></div>
+          <div class="tank-body" style="background:#3a4a5a;border-color:#5a6a7a;width:34px;height:24px"></div>
+          <div class="enemy-hp"><div class="enemy-hp-fill" style="width:100%"></div></div>
+        </div>
+        <div class="enemy-tank" style="position:absolute;top:140px;left:230px">
+          <div class="tank-turret" style="background:#5a3a2a"></div>
+          <div class="tank-body" style="background:#4a2a1a;border-color:#7a5a4a"></div>
+          <div class="enemy-hp"><div class="enemy-hp-fill" style="width:40%"></div></div>
+        </div>
+
+        <!-- 子弹 -->
+        <div class="bullet" style="bottom:175px;left:140px"></div>
+        <div class="bullet" style="bottom:205px;left:148px"></div>
+        <div class="bullet" style="bottom:190px;left:161px"></div>
+
+        <!-- 爆炸粒子 -->
+        <div class="explosion-particle" style="width:5px;height:5px;top:92px;left:195px;opacity:.8"></div>
+        <div class="explosion-particle" style="width:3px;height:3px;top:98px;left:202px;background:var(--red);opacity:.6"></div>
+        <div class="explosion-particle" style="width:4px;height:4px;top:85px;left:188px;opacity:.9"></div>
+
+        <!-- 道具 -->
+        <div class="item-pickup" style="top:200px;right:55px">⬆️</div>
+
+        <!-- 玩家飞机 -->
+        <div class="player-plane">
+          <div style="position:relative;width:36px;height:36px">
+            <div class="plane-wings" style="position:absolute;top:10px;left:-4px;width:44px;height:6px;background:#44a08d;border-radius:2px"></div>
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:28px solid var(--cyan)"></div>
+            <div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:rgba(255,107,107,.8);box-shadow:0 0 8px rgba(255,107,107,.8)"></div>
+          </div>
+        </div>
+
+        <!-- 连击 -->
+        <div class="combo-badge">
+          <div class="combo-text-big">×12 连击</div>
+          <div class="combo-multi">双倍得分</div>
+        </div>
+
+        <!-- 摇杆 -->
+        <div class="controls-area">
+          <div class="joystick"><div class="joystick-knob"></div></div>
+          <div class="bomb-btn">
+            <div class="bomb-icon">💣</div>
+            <div class="bomb-count">×2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. Boss 战界面 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">03 · Boss 战</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+
+        <!-- HUD -->
+        <div class="hud-bar">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="hud-score">48,700</span>
+            <span class="hud-wlv" style="color:#ff9ff3;border-color:rgba(192,132,252,.5);background:rgba(192,132,252,.1)">Lv.5 激光</span>
+          </div>
+          <span class="hud-wave" style="color:var(--red)">W3 BOSS</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <div class="hud-hearts">
+              <span class="hud-heart">❤️</span>
+              <span class="hud-heart">❤️</span>
+              <span class="hud-heart">❤️</span>
+            </div>
+            <span class="hud-pause">⏸</span>
+          </div>
+        </div>
+
+        <!-- Boss HP -->
+        <div class="boss-hp-wrap">
+          <div class="boss-hp-track"><div class="boss-hp-fill"></div></div>
+          <div class="boss-name">⚔ 钢铁堡垒 · IRONWALL ⚔</div>
+        </div>
+
+        <!-- Boss 红光晕 -->
+        <div style="position:absolute;top:60px;left:50%;transform:translateX(-50%);width:140px;height:140px;border-radius:50%;background:radial-gradient(circle, rgba(255,107,107,.2) 0%, transparent 70%);z-index:3"></div>
+
+        <!-- Boss 主体 -->
+        <div style="position:absolute;top:90px;left:50%;transform:translateX(-50%);z-index:4;text-align:center">
+          <div style="width:80px;height:56px;background:linear-gradient(180deg,#4a3020 0%,#1a0808 100%);border-radius:8px;border:2px solid rgba(255,107,107,.6);box-shadow:0 0 24px rgba(255,107,107,.5);margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative">
+            <div style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:22px;height:20px;background:#5a3a2a;border-radius:3px;border:1px solid rgba(255,107,107,.5)"></div>
+            <div style="font-size:22px">💀</div>
+          </div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:2px;color:var(--red);text-shadow:0 0 6px var(--red);margin-top:3px">IRONWALL</div>
+        </div>
+
+        <!-- Boss 子弹 -->
+        <div style="position:absolute;width:5px;height:14px;background:var(--red);border-radius:2px;box-shadow:0 0 8px var(--red);top:180px;left:110px"></div>
+        <div style="position:absolute;width:5px;height:14px;background:var(--red);border-radius:2px;box-shadow:0 0 8px var(--red);top:200px;left:180px"></div>
+        <div style="position:absolute;width:5px;height:14px;background:var(--red);border-radius:2px;box-shadow:0 0 8px var(--red);top:190px;left:210px"></div>
+
+        <!-- 激光束 -->
+        <div style="position:absolute;width:4px;background:linear-gradient(to top,rgba(192,132,252,0),#c084fc,#e9d5ff);bottom:160px;left:50%;transform:translateX(-50%);height:200px;box-shadow:0 0 12px #c084fc,0 0 24px rgba(192,132,252,.5);border-radius:2px;z-index:5"></div>
+
+        <!-- 玩家飞机 -->
+        <div class="player-plane" style="bottom:135px">
+          <div style="position:relative;width:36px;height:36px">
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:28px solid var(--cyan)"></div>
+            <div style="position:absolute;top:10px;left:-4px;width:44px;height:6px;background:#44a08d;border-radius:2px"></div>
+            <!-- 护盾 -->
+            <div style="position:absolute;top:-8px;left:-12px;width:60px;height:52px;border-radius:50%;border:2px solid rgba(255,215,0,.5);box-shadow:0 0 10px rgba(255,215,0,.3)"></div>
+          </div>
+        </div>
+
+        <!-- 摇杆 -->
+        <div class="controls-area">
+          <div class="joystick"><div class="joystick-knob" style="transform:translate(-4px,-8px)"></div></div>
+          <div class="bomb-btn"><div class="bomb-icon">💣</div><div class="bomb-count">×1</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 4. 波次过渡界面 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">04 · 波次过渡</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+
+        <!-- 简单背景敌人（暗色，正在消失） -->
+        <div class="enemy-tank" style="position:absolute;top:130px;left:50px;opacity:.2">
+          <div class="tank-turret"></div>
+          <div class="tank-body"></div>
+        </div>
+
+        <!-- 波次过渡覆盖 -->
+        <div class="wave-trans-overlay">
+          <div class="wave-trans-num">WAVE 3</div>
+          <div class="wave-trans-sub">⚔ Boss 战即将开始 ⚔</div>
+          <div style="margin-top:20px;font-size:11px;color:#666;letter-spacing:1px">准备迎战...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5. 暂停界面 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">05 · 暂停</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="overlay-screen" style="background:rgba(10,10,21,.88)">
+          <div class="pause-title">暂停</div>
+          <div class="pause-info-text">
+            W3 · 分数 48,700<br>
+            ❤️❤️❤️ · 武器 Lv.3
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-item">
+              <div class="toggle-dot"></div>
+              <span>音效</span>
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-dot off"></div>
+              <span>音乐</span>
+            </div>
+          </div>
+          <a class="btn">继续游戏</a>
+          <a class="btn btn-sec">重新开始</a>
+          <a class="btn btn-sec">返回首页</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 6. 结束界面 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">06 · 游戏结束</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="overlay-screen">
+          <!-- 标题红光 -->
+          <div style="position:absolute;top:120px;left:50%;transform:translateX(-50%);width:120px;height:50px;background:radial-gradient(ellipse,rgba(255,107,107,.3) 0%,transparent 70%);pointer-events:none"></div>
+          <div class="go-title">战斗结束</div>
+          <div class="stars-row">
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+            <span class="star dim">⭐</span>
+          </div>
+          <div class="new-record-badge">🏆 新纪录!</div>
+          <div class="go-score">88,850</div>
+          <div class="go-stats-card">
+            <div class="stat-card">
+              <div class="stat-val" style="color:var(--cyan)">W7</div>
+              <div class="stat-lbl">到达波次</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" style="color:var(--gold)">×23</div>
+              <div class="stat-lbl">最大连击</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">156</div>
+              <div class="stat-lbl">击毁坦克</div>
+            </div>
+          </div>
+          <a class="btn">再战一次</a>
+          <a class="btn btn-sec">返回首页</a>
+          <div style="font-size:9px;color:rgba(255,255,255,.22);margin-top:8px">飞机大战坦克 v2.0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 7. 操作指南 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">07 · 操作指南</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="overlay-screen">
+          <div class="tut-title">操作指南</div>
+          <div class="tut-controls-row">
+            <div class="tut-ctrl-item">
+              <div class="tut-ctrl-icon">🕹️</div>
+              <div>摇杆移动</div>
+            </div>
+            <div class="tut-ctrl-item">
+              <div class="tut-ctrl-icon">🔫</div>
+              <div>自动射击</div>
+            </div>
+            <div class="tut-ctrl-item">
+              <div class="tut-ctrl-icon">💣</div>
+              <div>炸弹清屏</div>
+            </div>
+          </div>
+          <div class="tut-section">
+            <span>目标：</span> 击退一波波敌军坦克部队<br>
+            <span>连击：</span> 1.5秒内连续击杀提升倍率<br>
+            <span>波次：</span> 每3波出现 Boss 战
+          </div>
+          <div class="item-row">
+            <div class="item-chip">⬆️ 武器升级</div>
+            <div class="item-chip">🛡️ 护盾</div>
+            <div class="item-chip">💣 炸弹</div>
+            <div class="item-chip">❤️ 回血</div>
+            <div class="item-chip">⭐ 双倍分</div>
+          </div>
+          <div class="tut-section" style="margin-bottom:10px">
+            <span>武器等级：</span><br>
+            Lv.1 单发 → Lv.2 双发 → Lv.3 三连<br>
+            Lv.4 扇形 → Lv.5 激光束
+          </div>
+          <a class="btn">开始游戏</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;margin-top:48px;color:#4b5563;font-size:11px;letter-spacing:.5px">
+  飞机大战坦克 · UI Prototype v1.0 · 2026-05 · 用 html.to.design 导入 Figma
+</div>
+
+</body>
+</html>
