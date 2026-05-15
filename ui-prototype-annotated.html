@@ -339,7 +339,7 @@ body {
         <div class="ann-name">最高分</div>
         <div class="ann-spec">
           字号 <code>13px</code> · 颜色 <span class="swatch" style="background:#4ecdc4"></span><code>#4ecdc4</code><br>
-          数据来源：<code>localStorage</code> key <code>atg_hi</code><br>
+          数据来源：<code>localStorage</code> key <code>atk_highscore</code><br>
           未有记录时显示：<code>"— 暂无记录 —"</code>
         </div>
       </div>
@@ -347,24 +347,26 @@ body {
     <div class="ann-row">
       <div class="ann-num y">5</div>
       <div class="ann-content">
-        <div class="ann-name">主按钮</div>
+        <div class="ann-name">主按钮 "开始战斗"</div>
         <div class="ann-spec">
           宽 <code>75%</code> · max <code>200px</code> · 高 <code>44px</code><br>
           <code>border-radius: 30px</code> · 字号 <code>16px Bold</code><br>
           渐变 <span class="swatch" style="background:linear-gradient(45deg,#4ecdc4,#44a08d)"></span><code>#4ecdc4 → #44a08d</code><br>
-          :active → <code>scale(0.96)</code>
-        </div>
-      </div>
-    </div>
-    <div class="ann-row">
-      <div class="ann-num r">6</div>
-      <div class="ann-content">
-        <div class="ann-name">次要按钮</div>
-        <div class="ann-spec">
-          同主按钮尺寸<br>
-          <code>bg rgba(255,255,255,.12)</code><br>
-          <code>border: 1px solid rgba(255,255,255,.25)</code>
-        </div>
+          :active → <code>scale(0.96)</code><br>
+	          点击：initAudio() → 隐藏 start-screen → phase 切换为 <code>playing</code> → 显示 HUD + 控件
+	        </div>
+	      </div>
+	    </div>
+	    <div class="ann-row">
+	      <div class="ann-num r">6</div>
+	      <div class="ann-content">
+	        <div class="ann-name">次要按钮 "操作指南"</div>
+	        <div class="ann-spec">
+	          同主按钮尺寸<br>
+	          <code>bg rgba(255,255,255,.12)</code><br>
+	          <code>border: 1px solid rgba(255,255,255,.25)</code><br>
+	          点击：隐藏 start-screen → 显示 tutorial-screen（phase 不变，仍为 menu）
+	        </div>
       </div>
     </div>
     <div class="ann-row">
@@ -512,7 +514,7 @@ body {
         <div class="ann-spec">
           5 种：⬆️ 武器升级 · 🛡️ 护盾 · 💣 炸弹 · ❤️ 回血 · ⭐ 双倍分<br>
           <code>filter: drop-shadow(0 0 6px rgba(255,217,61,.8))</code><br>
-          碰撞半径 <code>16px</code>，4秒后消失
+          碰撞半径 <code>16px</code>，3秒后消失
         </div>
       </div>
     </div>
@@ -523,7 +525,7 @@ body {
         <div class="ann-spec">
           <code>position: absolute; top: 44px</code> 居中<br>
           字号 <code>18px Bold</code> · <span class="swatch" style="background:#ffd93d"></span><code>#ffd93d</code><br>
-          倍率：×12 → <code>×1.5</code> | ×20 → <code>×2</code> | ×30 → <code>×3</code><br>
+          倍率：5杀 → <code>×1.5</code> | 10杀 → <code>×2</code> | 20杀 → <code>×3</code><br>
           1.5秒无击杀后淡出
         </div>
       </div>
@@ -684,7 +686,7 @@ body {
           椭圆轮廓覆盖玩家<br>
           <code>border: 2px solid rgba(255,215,0,.5)</code><br>
           <code>box-shadow: 0 0 10px rgba(255,215,0,.3)</code><br>
-          受击时闪烁，持续 <code>5s</code> 后消失
+          受击时闪烁，抵挡1次伤害或持续 <code>10s</code> 后消失
         </div>
       </div>
     </div>
@@ -742,8 +744,8 @@ body {
       <div class="ann-content">
         <div class="ann-name">等待提示</div>
         <div class="ann-spec">
-          过渡持续 <code>1.5s</code> 后自动开始下一波<br>
-          期间玩家无法操作
+          过渡持续 <code>3s</code> 后自动开始下一波<br>
+          波次间自动回血1点（若不满）
         </div>
       </div>
     </div>
@@ -816,7 +818,7 @@ body {
         <div class="ann-name">音效 / 音乐 开关</div>
         <div class="ann-spec">
           Toggle UI，开：<span class="swatch" style="background:#4ecdc4"></span>青色 · 关：<span class="swatch" style="background:#444"></span>灰色<br>
-          状态持久化至 <code>localStorage</code>：<code>atg_sfx</code> / <code>atg_bgm</code>
+          状态持久化至 <code>localStorage</code>：<code>atk_settings</code> 内 sfxOn / bgmOn
         </div>
       </div>
     </div>
@@ -826,7 +828,8 @@ body {
         <div class="ann-name">继续游戏（主按钮）</div>
         <div class="ann-spec">
           同开始界面主按钮规格<br>
-          点击后恢复游戏循环，隐藏暂停面板
+          点击后恢复游戏循环，隐藏暂停面板<br>
+	          恢复时重置 <code>lastTime</code> 为当前时间戳，防止累计 dt 导致瞬移
         </div>
       </div>
     </div>
@@ -954,7 +957,8 @@ body {
         <div class="ann-spec">
           "再战一次"：直接重开，保留音效设置<br>
           "返回首页"：显示开始界面<br>
-          两者都不重置 <code>localStorage</code> 最高分
+          两者都不重置 <code>localStorage</code> 最高分<br>
+	          结算时序：lives=0 → 写入 localStorage（<code>atk_highscore</code> / <code>atk_maxwave</code> / <code>atk_total_kills</code>）→ 停止 BGM → 显示 game-over → 填入统计 → 判断新纪录 → 计算星级
         </div>
       </div>
     </div>
@@ -1046,6 +1050,497 @@ body {
           Lv.1~4 颜色 <span class="swatch" style="background:#4ecdc4"></span>青色<br>
           Lv.5 激光颜色 <span class="swatch" style="background:#c084fc"></span><code>#c084fc</code>（紫色强调）<br>
           点击"开始游戏"关闭教程，进入 menu 开始流程
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 08 · 武器 & 敌人图鉴 ===== -->
+<div class="section-divider"><div class="section-divider-label">08 · 武器 & 敌人图鉴</div></div>
+<div class="screen-block">
+  <div class="screen-meta">
+    <div class="screen-label">武器等级对比 / Weapon Levels</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 16px 16px;gap:10px;z-index:10">
+          <!-- Lv1 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:40px;text-align:center"><span style="color:#4ecdc4;font-size:10px;font-weight:700">Lv.1</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:10px;color:#fff;font-weight:600">单发</div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <div style="width:3px;height:18px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div>
+                <span style="font-size:9px;color:#888">1条子弹 · 射速300ms</span>
+              </div>
+            </div>
+          </div>
+          <!-- Lv2 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:40px;text-align:center"><span style="color:#4ecdc4;font-size:10px;font-weight:700">Lv.2</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:10px;color:#fff;font-weight:600">双发</div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <div style="display:flex;gap:5px">
+                  <div style="width:3px;height:18px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div>
+                  <div style="width:3px;height:18px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div>
+                </div>
+                <span style="font-size:9px;color:#888">2条平行 · 射速280ms</span>
+              </div>
+            </div>
+          </div>
+          <!-- Lv3 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:40px;text-align:center"><span style="color:#4ecdc4;font-size:10px;font-weight:700">Lv.3</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:10px;color:#fff;font-weight:600">三向</div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <div style="display:flex;gap:4px;align-items:flex-end">
+                  <div style="width:3px;height:14px;background:#4ecdc4;border-radius:2px;transform:rotate(20deg);box-shadow:0 0 5px #4ecdc4"></div>
+                  <div style="width:3px;height:18px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div>
+                  <div style="width:3px;height:14px;background:#4ecdc4;border-radius:2px;transform:rotate(-20deg);box-shadow:0 0 5px #4ecdc4"></div>
+                </div>
+                <span style="font-size:9px;color:#888">3条(前+左30°+右30°) · 射速260ms</span>
+              </div>
+            </div>
+          </div>
+          <!-- Lv4 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:40px;text-align:center"><span style="color:#4ecdc4;font-size:10px;font-weight:700">Lv.4</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:10px;color:#fff;font-weight:600">五向</div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <div style="display:flex;gap:3px;align-items:flex-end">
+                  <div style="width:2px;height:10px;background:#4ecdc4;border-radius:2px;transform:rotate(35deg)"></div>
+                  <div style="width:2px;height:14px;background:#4ecdc4;border-radius:2px;transform:rotate(15deg)"></div>
+                  <div style="width:3px;height:18px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div>
+                  <div style="width:2px;height:14px;background:#4ecdc4;border-radius:2px;transform:rotate(-15deg)"></div>
+                  <div style="width:2px;height:10px;background:#4ecdc4;border-radius:2px;transform:rotate(-35deg)"></div>
+                </div>
+                <span style="font-size:9px;color:#888">5条散射 · 射速240ms</span>
+              </div>
+            </div>
+          </div>
+          <!-- Lv5 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);border-radius:8px;padding:8px 10px">
+            <div style="width:40px;text-align:center"><span style="color:#c084fc;font-size:10px;font-weight:700">Lv.5</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:10px;color:#c084fc;font-weight:600">激光束</div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <div style="width:4px;height:22px;background:linear-gradient(to top,rgba(192,132,252,0),#c084fc,#e9d5ff);border-radius:2px;box-shadow:0 0 8px #c084fc"></div>
+                <span style="font-size:9px;color:#888">连续激光 · 持续伤害 · 射速不适用</span>
+              </div>
+            </div>
+          </div>
+          <!-- 降级说明 -->
+          <div style="font-size:9px;color:#666;margin-top:4px;text-align:center">死亡后武器降1级（最低Lv.1）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann-panel">
+    <div class="ann-panel-title">标注说明</div>
+    <div class="ann-row">
+      <div class="ann-num c">1</div>
+      <div class="ann-content">
+        <div class="ann-name">子弹颜色</div>
+        <div class="ann-spec">
+          Lv.1-4：<span class="swatch" style="background:#4ecdc4"></span><code>#4ecdc4</code> · <code>box-shadow: 0 0 5px #4ecdc4</code><br>
+          Lv.5 激光：<span class="swatch" style="background:#c084fc"></span><code>#c084fc</code> · <code>box-shadow: 0 0 12px #c084fc</code>
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num y">2</div>
+      <div class="ann-content">
+        <div class="ann-name">子弹尺寸</div>
+        <div class="ann-spec">
+          普通子弹：宽 <code>3px</code> · 高 <code>9px</code><br>
+          激光束：宽 <code>4px</code> · 从玩家延伸到屏幕顶部
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num r">3</div>
+      <div class="ann-content">
+        <div class="ann-name">射速递进</div>
+        <div class="ann-spec">
+          Lv.1: <code>300ms</code> → Lv.2: <code>280ms</code> → Lv.3: <code>260ms</code> → Lv.4: <code>240ms</code><br>
+          每级减少 <code>20ms</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 08b 敌人图鉴 -->
+<div class="screen-block reverse">
+  <div class="screen-meta">
+    <div class="screen-label">敌人类型对比 / Enemy Types</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 16px 16px;gap:12px;z-index:10">
+          <!-- 普通坦克 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:1px">
+              <div style="width:9px;height:13px;background:#6a5a4a;border-radius:2px;border:1px solid #8a7a6a"></div>
+              <div style="width:27px;height:19px;background:#ff6b6b;border-radius:3px;border:1px solid rgba(255,107,107,.6)"></div>
+              <div style="width:23px;height:3px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden"><div style="height:100%;width:100%;background:#ff6b6b;border-radius:2px"></div></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:10px;color:#ff6b6b;font-weight:600">普通坦克</div>
+              <div style="font-size:9px;color:#888">2 HP · 直线前进 · 定时射击</div>
+              <div style="font-size:9px;color:#666">击毁 100分 · 掉落率 10%</div>
+            </div>
+          </div>
+          <!-- 快速坦克 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:1px">
+              <div style="width:7px;height:10px;background:#8a5a7a;border-radius:2px;border:1px solid #aa7a9a"></div>
+              <div style="width:22px;height:15px;background:#ff9ff3;border-radius:3px;border:1px solid rgba(255,159,243,.6)"></div>
+              <div style="width:18px;height:3px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden"><div style="height:100%;width:100%;background:#ff9ff3;border-radius:2px"></div></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:10px;color:#ff9ff3;font-weight:600">快速坦克</div>
+              <div style="font-size:9px;color:#888">1 HP · 速度快 · 蛇形移动</div>
+              <div style="font-size:9px;color:#666">击毁 150分 · 掉落率 15%</div>
+            </div>
+          </div>
+          <!-- 重型坦克 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:1px">
+              <div style="width:11px;height:15px;background:#5a2020;border-radius:2px;border:1px solid #7a4040"></div>
+              <div style="width:34px;height:24px;background:#c0392b;border-radius:4px;border:2px solid rgba(192,57,43,.7)"></div>
+              <div style="width:30px;height:4px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden"><div style="height:100%;width:50%;background:#c0392b;border-radius:2px"></div></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:10px;color:#c0392b;font-weight:600">重型坦克</div>
+              <div style="font-size:9px;color:#888">4 HP · 射击频率高 · 子弹散射</div>
+              <div style="font-size:9px;color:#666">击毁 300分 · 掉落率 25%</div>
+            </div>
+          </div>
+          <!-- 防空车 -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px">
+            <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:1px">
+              <div style="width:8px;height:14px;background:#8a6020;border-radius:2px;border:1px solid #aa8040"></div>
+              <div style="width:30px;height:18px;background:#f39c12;border-radius:3px;border:1px solid rgba(243,156,18,.6)"></div>
+              <div style="width:26px;height:3px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden"><div style="height:100%;width:66%;background:#f39c12;border-radius:2px"></div></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:10px;color:#f39c12;font-weight:600">防空车</div>
+              <div style="font-size:9px;color:#888">3 HP · 发射追踪导弹</div>
+              <div style="font-size:9px;color:#666">击毁 250分 · 掉落率 20%</div>
+            </div>
+          </div>
+          <!-- Boss -->
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.2);border-radius:8px;padding:8px 10px">
+            <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:1px">
+              <div style="width:14px;height:18px;background:#5a3a2a;border-radius:3px;border:1px solid rgba(255,107,107,.5)"></div>
+              <div style="width:40px;height:28px;background:linear-gradient(180deg,#4a3020,#1a0808);border-radius:6px;border:2px solid rgba(255,107,107,.6);box-shadow:0 0 12px rgba(255,107,107,.4);display:flex;align-items:center;justify-content:center"><span style="font-size:12px">💀</span></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:10px;color:#ff6b6b;font-weight:600">Boss · 每3波出现</div>
+              <div style="font-size:9px;color:#888">50+ HP · 多阶段 · 多攻击模式</div>
+              <div style="font-size:9px;color:#666">击毁 2000×Boss等级 · 必掉2-3个道具</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann-panel">
+    <div class="ann-panel-title">标注说明</div>
+    <div class="ann-row">
+      <div class="ann-num c">1</div>
+      <div class="ann-content">
+        <div class="ann-name">敌人颜色体系</div>
+        <div class="ann-spec">
+          普通：<span class="swatch" style="background:#ff6b6b"></span><code>#ff6b6b</code><br>
+          快速：<span class="swatch" style="background:#ff9ff3"></span><code>#ff9ff3</code><br>
+          重型：<span class="swatch" style="background:#c0392b"></span><code>#c0392b</code><br>
+          防空车：<span class="swatch" style="background:#f39c12"></span><code>#f39c12</code><br>
+          Boss：<span class="swatch" style="background:#ff6b6b"></span><code>#ff6b6b</code> + 红色发光
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num y">2</div>
+      <div class="ann-content">
+        <div class="ann-name">体积差异</div>
+        <div class="ann-spec">
+          快速坦克最小（<code>22×15px</code>）<br>
+          普通坦克中等（<code>27×19px</code>）<br>
+          防空车中等偏宽（<code>30×18px</code>）<br>
+          重型坦克最大（<code>34×24px</code>）
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num r">3</div>
+      <div class="ann-content">
+        <div class="ann-name">行为差异</div>
+        <div class="ann-spec">
+          普通：直线前进 + 定时射击<br>
+          快速：蛇形移动 + 速度快<br>
+          重型：散射攻击（3发扇形）<br>
+          防空车：追踪导弹（缓慢跟踪玩家）
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 09 · 战斗特效 ===== -->
+<div class="section-divider"><div class="section-divider-label">09 · 战斗特效</div></div>
+<div class="screen-block">
+  <div class="screen-meta">
+    <div class="screen-label">受击闪烁 & 炸弹闪白 / Invincible & Bomb Flash</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+        <!-- 受击闪烁状态 -->
+        <div style="position:absolute;top:30px;left:0;right:0;text-align:center;z-index:20">
+          <div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:6px">— 受击无敌闪烁 —</div>
+        </div>
+        <!-- 玩家闪烁（半透明态） -->
+        <div style="position:absolute;bottom:180px;left:30%;transform:translateX(-50%);z-index:5;opacity:0.35">
+          <div style="position:relative;width:36px;height:36px">
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:26px solid #4ecdc4"></div>
+            <div style="position:absolute;top:10px;left:-4px;width:44px;height:5px;background:#44a08d;border-radius:2px"></div>
+            <div style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:rgba(255,107,107,.8);box-shadow:0 0 8px rgba(255,107,107,.8)"></div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:145px;left:12%;font-size:9px;color:#ff6b6b;z-index:20">← 透明度0.35（闪烁低态）</div>
+        <!-- 玩家闪烁（全透明态） -->
+        <div style="position:absolute;bottom:180px;left:70%;transform:translateX(-50%);z-index:5;opacity:1">
+          <div style="position:relative;width:36px;height:36px">
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:26px solid #4ecdc4"></div>
+            <div style="position:absolute;top:10px;left:-4px;width:44px;height:5px;background:#44a08d;border-radius:2px"></div>
+            <div style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:rgba(255,107,107,.8);box-shadow:0 0 8px rgba(255,107,107,.8)"></div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:145px;right:8%;font-size:9px;color:#4ecdc4;z-index:20;text-align:right">透明度1.0（闪烁高态）→</div>
+        <!-- 炸弹闪白 -->
+        <div style="position:absolute;top:50%;left:0;right:0;text-align:center;z-index:20">
+          <div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:6px">— 炸弹全屏闪白 —</div>
+          <div style="position:relative;width:200px;height:100px;margin:0 auto;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.15);border-radius:8px;overflow:hidden">
+            <div style="position:absolute;inset:0;background:#fff;opacity:0.85"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+              <div style="font-size:10px;color:#000;font-weight:700">全屏白闪 opacity:0.85</div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:60px;left:0;right:0;text-align:center;font-size:9px;color:#666;z-index:20">持续时间 0.3s → 所有敌人受10点伤害 → 消灭所有敌方子弹 → 2秒无敌</div>
+      </div>
+    </div>
+  </div>
+  <div class="ann-panel">
+    <div class="ann-panel-title">标注说明</div>
+    <div class="ann-row">
+      <div class="ann-num c">1</div>
+      <div class="ann-content">
+        <div class="ann-name">受击闪烁</div>
+        <div class="ann-spec">
+          触发：受击后进入 <code>1.5s</code> 无敌<br>
+          表现：opacity 在 <code>0.35</code> 和 <code>1.0</code> 间交替<br>
+          闪烁频率：约 <code>100ms</code> 一周期<br>
+          无敌期间不重复受击，移动和射击正常
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num r">2</div>
+      <div class="ann-content">
+        <div class="ann-name">炸弹全屏闪白</div>
+        <div class="ann-spec">
+          触发：点击炸弹按钮<br>
+          白色覆盖层：<code>background: #fff</code> · <code>opacity: 0.85</code><br>
+          持续 <code>0.3s</code> 后淡出<br>
+          后续效果：敌全屏受伤 → 敌弹清除 → <code>2s</code> 无敌
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 09b 分数上飘 -->
+<div class="screen-block reverse">
+  <div class="screen-meta">
+    <div class="screen-label">分数上飘 & 爆炸粒子 / Score Popup & Explosion</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+        <!-- 分数上飘 -->
+        <div style="position:absolute;top:200px;left:50%;transform:translateX(-50%);z-index:15;text-align:center">
+          <div style="font-size:14px;font-weight:700;color:#4ecdc4;text-shadow:0 0 8px rgba(78,205,196,.5)">+100</div>
+          <div style="font-size:9px;color:#ff9ff3">×1.5</div>
+        </div>
+        <div style="position:absolute;top:160px;left:35%;transform:translateX(-50%);z-index:15;opacity:0.5">
+          <div style="font-size:11px;font-weight:700;color:#4ecdc4">+250</div>
+          <div style="font-size:8px;color:#ff9ff3">×2</div>
+        </div>
+        <div style="position:absolute;top:130px;left:65%;transform:translateX(-50%);z-index:15;opacity:0.25">
+          <div style="font-size:9px;font-weight:700;color:#4ecdc4">+300</div>
+        </div>
+        <!-- 爆炸粒子 -->
+        <div style="position:absolute;top:340px;left:50%;transform:translateX(-50%);z-index:8">
+          <div style="width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#ff6b6b 0%,#f39c12 40%,transparent 70%);opacity:0.7"></div>
+        </div>
+        <div style="position:absolute;top:332px;left:38%;z-index:7">
+          <div style="width:4px;height:4px;border-radius:50%;background:#ffd93d;box-shadow:0 0 4px #ffd93d"></div>
+        </div>
+        <div style="position:absolute;top:355px;left:62%;z-index:7">
+          <div style="width:3px;height:3px;border-radius:50%;background:#ff6b6b;box-shadow:0 0 4px #ff6b6b"></div>
+        </div>
+        <div style="position:absolute;top:325px;left:55%;z-index:7">
+          <div style="width:5px;height:5px;border-radius:50%;background:#f39c12;box-shadow:0 0 4px #f39c12"></div>
+        </div>
+        <div style="position:absolute;top:360px;left:42%;z-index:7">
+          <div style="width:3px;height:3px;border-radius:50%;background:#4ecdc4;box-shadow:0 0 4px #4ecdc4"></div>
+        </div>
+        <!-- 道具拾取光效 -->
+        <div style="position:absolute;top:470px;left:50%;transform:translateX(-50%);z-index:15;text-align:center">
+          <div style="font-size:20px;filter:drop-shadow(0 0 10px rgba(78,205,196,.9))">⬆️</div>
+          <div style="font-size:9px;color:#4ecdc4;margin-top:2px">武器升级!</div>
+        </div>
+        <!-- 说明 -->
+        <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;font-size:9px;color:#666;z-index:20">分数文字：从击杀位置上飘 → 1s 后淡出消失</div>
+      </div>
+    </div>
+  </div>
+  <div class="ann-panel">
+    <div class="ann-panel-title">标注说明</div>
+    <div class="ann-row">
+      <div class="ann-num c">1</div>
+      <div class="ann-content">
+        <div class="ann-name">分数上飘文字</div>
+        <div class="ann-spec">
+          分数：<code>14px Bold</code> · <span class="swatch" style="background:#4ecdc4"></span><code>#4ecdc4</code><br>
+          倍率：<code>9px</code> · <span class="swatch" style="background:#ff9ff3"></span><code>#ff9ff3</code><br>
+          从击杀位置向上飘动 <code>1s</code>，opacity 1→0<br>
+          格式：<code>+{分数}</code> 上方显示 <code>×{倍率}</code>
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num y">2</div>
+      <div class="ann-content">
+        <div class="ann-name">爆炸效果</div>
+        <div class="ann-spec">
+          中心：径向渐变圆 <code>#ff6b6b → #f39c12 → transparent</code><br>
+          粒子：<code>3-5px</code> 圆点向四周飞散<br>
+          粒子颜色：<span class="swatch" style="background:#ffd93d"></span><span class="swatch" style="background:#ff6b6b"></span><span class="swatch" style="background:#f39c12"></span><span class="swatch" style="background:#4ecdc4"></span><br>
+          持续 <code>300ms</code>，粒子数上限 100
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num r">3</div>
+      <div class="ann-content">
+        <div class="ann-name">道具拾取反馈</div>
+        <div class="ann-spec">
+          拾取瞬间：<code>drop-shadow</code> 光效放大<br>
+          拾取后显示效果文字（如"武器升级!"）<br>
+          文字字号 <code>9px</code> · <span class="swatch" style="background:#4ecdc4"></span><code>#4ecdc4</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10 · 状态增益 ===== -->
+<div class="section-divider"><div class="section-divider-label">10 · 状态增益</div></div>
+<div class="screen-block">
+  <div class="screen-meta">
+    <div class="screen-label">护盾 & 双倍分 & 炸弹禁用态 / Power-ups & States</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+        <!-- HUD -->
+        <div class="hud-bar">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="hud-score">36,200</span>
+            <span class="hud-wlv">Lv.2 双发</span>
+          </div>
+          <span class="hud-wave">W4</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <div class="hud-hearts"><span class="hud-heart">❤️</span><span class="hud-heart">❤️</span><span class="hud-heart lost">❤️</span></div>
+            <span class="hud-pause">⏸</span>
+          </div>
+        </div>
+        <!-- 状态栏 -->
+        <div style="position:absolute;top:42px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;z-index:11">
+          <div style="background:rgba(0,0,0,.72);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;border:1px solid rgba(255,215,0,.5);color:#ffd93d">🛡️ 护盾 7s</div>
+          <div style="background:rgba(0,0,0,.72);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;border:1px solid rgba(255,200,0,.5);color:#ffaa00">⭐ ×2 5s</div>
+        </div>
+        <!-- 玩家+护盾 -->
+        <div style="position:absolute;bottom:160px;left:50%;transform:translateX(-50%);z-index:5">
+          <div style="position:relative;width:60px;height:52px;display:flex;align-items:center;justify-content:center">
+            <div style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,215,0,.5);box-shadow:0 0 10px rgba(255,215,0,.3)"></div>
+            <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:26px solid #4ecdc4"></div>
+            <div style="position:absolute;top:18px;left:4px;width:44px;height:5px;background:#44a08d;border-radius:2px"></div>
+          </div>
+        </div>
+        <!-- 炸弹禁用态 -->
+        <div style="position:absolute;bottom:40px;left:0;right:0;display:flex;justify-content:space-around;padding:0 13px;z-index:12">
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#666;margin-bottom:3px">炸弹有弹药</div>
+            <div style="width:50px;height:50px;border-radius:50%;background:rgba(255,107,107,.28);border:2px solid rgba(255,107,107,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+              <div style="font-size:17px">💣</div>
+              <div style="font-size:9px;font-weight:700;color:#fff">×2</div>
+            </div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#666;margin-bottom:3px">炸弹为0（禁用）</div>
+            <div style="width:50px;height:50px;border-radius:50%;background:rgba(255,107,107,.1);border:2px solid rgba(255,107,107,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;opacity:0.4">
+              <div style="font-size:17px">💣</div>
+              <div style="font-size:9px;font-weight:700;color:#fff">×0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ann-panel">
+    <div class="ann-panel-title">标注说明</div>
+    <div class="ann-row">
+      <div class="ann-num c">1</div>
+      <div class="ann-content">
+        <div class="ann-name">护盾光环</div>
+        <div class="ann-spec">
+          椭圆轮廓覆盖玩家<br>
+          <code>border: 2px solid rgba(255,215,0,.5)</code><br>
+          <code>box-shadow: 0 0 10px rgba(255,215,0,.3)</code><br>
+          受击时闪烁，抵挡1次伤害或持续 <code>10s</code> 后消失
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num y">2</div>
+      <div class="ann-content">
+        <div class="ann-name">状态栏药丸</div>
+        <div class="ann-spec">
+          右上角竖排，每个状态一个药丸标签<br>
+          护盾：<span class="swatch" style="background:#ffd93d"></span><code>#ffd93d</code> · border <code>rgba(255,215,0,.5)</code><br>
+          双倍分：<span class="swatch" style="background:#ffaa00"></span><code>#ffaa00</code> · border <code>rgba(255,200,0,.5)</code><br>
+          显示剩余秒数倒计时，结束时淡出
+        </div>
+      </div>
+    </div>
+    <div class="ann-row">
+      <div class="ann-num r">3</div>
+      <div class="ann-content">
+        <div class="ann-name">炸弹按钮状态</div>
+        <div class="ann-spec">
+          有弹药：正常样式 · 可点击<br>
+          为0时：<code>opacity: 0.4</code> · 背景和边框颜色减淡<br>
+          按下：<code>scale(0.95)</code> + 红色加深<br>
+          初始携带1枚，最多存3枚
         </div>
       </div>
     </div>

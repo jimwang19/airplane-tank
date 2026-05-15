@@ -925,6 +925,207 @@
     </div>
   </div>
 
+  <!-- ===== 08 · 武器 & 敌人图鉴 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">08 · 武器等级</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 20px 20px;gap:14px;z-index:10">
+          <div style="text-align:center;font-size:12px;font-weight:700;color:#4ecdc4;letter-spacing:1px;margin-bottom:4px">武器等级对比</div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;text-align:center"><span style="color:#4ecdc4;font-size:12px;font-weight:700">Lv.1</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:12px;color:#fff;font-weight:600">单发</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:3px;height:20px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div>
+                <span style="font-size:10px;color:#888">1条 · 射速300ms</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;text-align:center"><span style="color:#4ecdc4;font-size:12px;font-weight:700">Lv.2</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:12px;color:#fff;font-weight:600">双发</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="display:flex;gap:6px"><div style="width:3px;height:20px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div><div style="width:3px;height:20px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div></div>
+                <span style="font-size:10px;color:#888">2条平行 · 射速280ms</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;text-align:center"><span style="color:#4ecdc4;font-size:12px;font-weight:700">Lv.3</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:12px;color:#fff;font-weight:600">三向</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="display:flex;gap:4px;align-items:flex-end"><div style="width:3px;height:16px;background:#4ecdc4;border-radius:2px;transform:rotate(20deg);box-shadow:0 0 5px #4ecdc4"></div><div style="width:3px;height:20px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div><div style="width:3px;height:16px;background:#4ecdc4;border-radius:2px;transform:rotate(-20deg);box-shadow:0 0 5px #4ecdc4"></div></div>
+                <span style="font-size:10px;color:#888">前+左30°+右30° · 260ms</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;text-align:center"><span style="color:#4ecdc4;font-size:12px;font-weight:700">Lv.4</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:12px;color:#fff;font-weight:600">五向</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="display:flex;gap:3px;align-items:flex-end"><div style="width:2px;height:12px;background:#4ecdc4;border-radius:2px;transform:rotate(35deg)"></div><div style="width:2px;height:16px;background:#4ecdc4;border-radius:2px;transform:rotate(15deg)"></div><div style="width:3px;height:20px;background:#4ecdc4;border-radius:2px;box-shadow:0 0 5px #4ecdc4"></div><div style="width:2px;height:16px;background:#4ecdc4;border-radius:2px;transform:rotate(-15deg)"></div><div style="width:2px;height:12px;background:#4ecdc4;border-radius:2px;transform:rotate(-35deg)"></div></div>
+                <span style="font-size:10px;color:#888">5条散射 · 240ms</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;text-align:center"><span style="color:#c084fc;font-size:12px;font-weight:700">Lv.5</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:12px;color:#c084fc;font-weight:600">激光束</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:4px;height:24px;background:linear-gradient(to top,rgba(192,132,252,0),#c084fc,#e9d5ff);border-radius:2px;box-shadow:0 0 8px #c084fc"></div>
+                <span style="font-size:10px;color:#888">持续伤害 · 射速不适用</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#666;text-align:center;margin-top:4px">死亡后武器降1级（最低Lv.1）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">08 · 敌人类型</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 20px 20px;gap:14px;z-index:10">
+          <div style="text-align:center;font-size:12px;font-weight:700;color:#ff6b6b;letter-spacing:1px;margin-bottom:4px">敌人类型对比</div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="width:9px;height:13px;background:#6a5a4a;border-radius:2px;border:1px solid #8a7a6a"></div>
+              <div style="width:27px;height:19px;background:#ff6b6b;border-radius:3px;border:1px solid rgba(255,107,107,.6)"></div>
+            </div>
+            <div style="flex:1"><div style="font-size:12px;color:#ff6b6b;font-weight:600">普通坦克</div><div style="font-size:10px;color:#888">2HP · 直线 · 定时射击 · 100分</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="width:7px;height:10px;background:#8a5a7a;border-radius:2px;border:1px solid #aa7a9a"></div>
+              <div style="width:22px;height:15px;background:#ff9ff3;border-radius:3px;border:1px solid rgba(255,159,243,.6)"></div>
+            </div>
+            <div style="flex:1"><div style="font-size:12px;color:#ff9ff3;font-weight:600">快速坦克</div><div style="font-size:10px;color:#888">1HP · 蛇形移动 · 高速 · 150分</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="width:11px;height:15px;background:#5a2020;border-radius:2px;border:1px solid #7a4040"></div>
+              <div style="width:34px;height:24px;background:#c0392b;border-radius:4px;border:2px solid rgba(192,57,43,.7)"></div>
+            </div>
+            <div style="flex:1"><div style="font-size:12px;color:#c0392b;font-weight:600">重型坦克</div><div style="font-size:10px;color:#888">4HP · 散射攻击 · 高频射击 · 300分</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="width:8px;height:14px;background:#8a6020;border-radius:2px;border:1px solid #aa8040"></div>
+              <div style="width:30px;height:18px;background:#f39c12;border-radius:3px;border:1px solid rgba(243,156,18,.6)"></div>
+            </div>
+            <div style="flex:1"><div style="font-size:12px;color:#f39c12;font-weight:600">防空车</div><div style="font-size:10px;color:#888">3HP · 追踪导弹 · 250分</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.2);border-radius:8px;padding:10px 12px">
+            <div style="width:50px;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="width:14px;height:18px;background:#5a3a2a;border-radius:3px;border:1px solid rgba(255,107,107,.5)"></div>
+              <div style="width:40px;height:28px;background:linear-gradient(180deg,#4a3020,#1a0808);border-radius:6px;border:2px solid rgba(255,107,107,.6);box-shadow:0 0 12px rgba(255,107,107,.4);display:flex;align-items:center;justify-content:center"><span style="font-size:12px">💀</span></div>
+            </div>
+            <div style="flex:1"><div style="font-size:12px;color:#ff6b6b;font-weight:600">Boss · 每3波</div><div style="font-size:10px;color:#888">50+HP · 多阶段 · 2000×等级</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 09 · 战斗特效 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">09 · 战斗特效</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+        <!-- 受击闪烁 -->
+        <div style="position:absolute;top:30px;left:0;right:0;text-align:center;z-index:20">
+          <div style="font-size:11px;color:#888;letter-spacing:1px">受击无敌闪烁</div>
+        </div>
+        <div style="position:absolute;bottom:340px;left:25%;z-index:5;opacity:0.35">
+          <div style="position:relative;width:36px;height:36px">
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:26px solid #4ecdc4"></div>
+            <div style="position:absolute;top:10px;left:-4px;width:44px;height:5px;background:#44a08d;border-radius:2px"></div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:340px;left:60%;z-index:5;opacity:1">
+          <div style="position:relative;width:36px;height:36px">
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:26px solid #4ecdc4"></div>
+            <div style="position:absolute;top:10px;left:-4px;width:44px;height:5px;background:#44a08d;border-radius:2px"></div>
+          </div>
+        </div>
+        <!-- 炸弹闪白 -->
+        <div style="position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);z-index:20;text-align:center">
+          <div style="font-size:11px;color:#888;letter-spacing:1px;margin-bottom:8px">炸弹全屏闪白</div>
+          <div style="width:200px;height:80px;background:rgba(255,255,255,.85);border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto">
+            <span style="font-size:11px;color:#000;font-weight:700">opacity: 0.85 · 0.3s</span>
+          </div>
+        </div>
+        <!-- 分数上飘 -->
+        <div style="position:absolute;top:62%;left:50%;transform:translateX(-50%);z-index:15;text-align:center">
+          <div style="font-size:11px;color:#888;letter-spacing:1px;margin-bottom:8px">分数上飘</div>
+          <div style="font-size:14px;font-weight:700;color:#4ecdc4;text-shadow:0 0 8px rgba(78,205,196,.5)">+100</div>
+          <div style="font-size:9px;color:#ff9ff3">×1.5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 10 · 状态增益 ===== -->
+  <div class="screen-wrap">
+    <div class="screen-label">10 · 状态增益</div>
+    <div class="phone-shell">
+      <div class="screen">
+        <div class="starfield"></div>
+        <div class="terrain-bar"></div>
+        <div class="hud-bar">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="hud-score">36,200</span>
+            <span class="hud-wlv">Lv.2 双发</span>
+          </div>
+          <span class="hud-wave">W4</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <div class="hud-hearts"><span class="hud-heart">❤️</span><span class="hud-heart">❤️</span><span class="hud-heart lost">❤️</span></div>
+            <span class="hud-pause">⏸</span>
+          </div>
+        </div>
+        <!-- 状态栏 -->
+        <div style="position:absolute;top:42px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;z-index:11">
+          <div style="background:rgba(0,0,0,.72);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;border:1px solid rgba(255,215,0,.5);color:#ffd93d">🛡️ 护盾 7s</div>
+          <div style="background:rgba(0,0,0,.72);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;border:1px solid rgba(255,200,0,.5);color:#ffaa00">⭐ ×2 5s</div>
+        </div>
+        <!-- 玩家+护盾 -->
+        <div style="position:absolute;bottom:200px;left:50%;transform:translateX(-50%);z-index:5">
+          <div style="position:relative;width:60px;height:52px;display:flex;align-items:center;justify-content:center">
+            <div style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,215,0,.5);box-shadow:0 0 10px rgba(255,215,0,.3)"></div>
+            <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:26px solid #4ecdc4"></div>
+            <div style="position:absolute;top:18px;left:4px;width:44px;height:5px;background:#44a08d;border-radius:2px"></div>
+          </div>
+        </div>
+        <!-- 炸弹状态对比 -->
+        <div style="position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:40px;z-index:12">
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#666;margin-bottom:4px">有弹药</div>
+            <div style="width:50px;height:50px;border-radius:50%;background:rgba(255,107,107,.28);border:2px solid rgba(255,107,107,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+              <div style="font-size:16px">💣</div><div style="font-size:9px;font-weight:700;color:#fff">×2</div>
+            </div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:#666;margin-bottom:4px">弹药为0</div>
+            <div style="width:50px;height:50px;border-radius:50%;background:rgba(255,107,107,.1);border:2px solid rgba(255,107,107,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;opacity:0.4">
+              <div style="font-size:16px">💣</div><div style="font-size:9px;font-weight:700;color:#fff">×0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div style="text-align:center;margin-top:48px;color:#4b5563;font-size:11px;letter-spacing:.5px">
